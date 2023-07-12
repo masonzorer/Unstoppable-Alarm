@@ -103,6 +103,7 @@ def train(train_dataloader, dev_dataloader, num_epochs, learning_rate):
                     for spectrograms, labels in dev_dataloader:
                         output = model(spectrograms)
                         _, predicted = torch.max(output.data, 1)
+                        print(predicted)
                         total += labels.size(0)
                         correct += (predicted == labels).sum().item()
                         if total > 400:

@@ -1,10 +1,12 @@
 # create dataloaders that will process the data
 import os 
 import numpy as np
+import pandas as pd
 import torch
 import torchaudio
 from torch.utils.data import Dataset, DataLoader
 from torchaudio.transforms import MelSpectrogram
+import matplotlib.pyplot as plt
 
 # create dataset class
 class Dataset(torch.utils.data.Dataset):
@@ -91,3 +93,22 @@ def create(train_data, eval_data, batch_size):
 
     return train_dataloader, eval_dataloader
 
+def main():
+    # load the data
+    train_data = pd.read_csv('Data/train_groundtruth.csv')
+    eval_data = pd.read_csv('Data/dev_groundtruth.csv')
+    # create dataloaders
+    train_dataloader, eval_dataloader = create(train_data, eval_data, 16)
+
+    # graph spectrograms with labels
+    for spectrogram, label in eval_dataloader:
+        # get the spectrogram and label
+        spectrogram = spectrogram[0]
+        label = label[0]
+        # graph the spectrogram
+        plt.imshow(spectrogram[0].numpy())
+        plt.title(label)
+        plt.show()
+
+if __name__ == '__main__':
+    main()
