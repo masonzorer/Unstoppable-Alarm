@@ -1,6 +1,5 @@
 # main driver for model training
 import pandas as pd
-import matplotlib.pyplot as plt
 import dataloaders
 import model
 
@@ -8,7 +7,7 @@ def main():
 
     # Hyperparameters
     batch_size = 16
-    num_epochs = 10
+    num_epochs = 25
     learning_rate = 0.0001
     
     # load data for the training process

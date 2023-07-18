@@ -20,7 +20,7 @@ class CNN(nn.Module):
         # relu activation function
         self.relu = nn.ReLU()
         # dropout layer
-        self.dropout1 = nn.Dropout(p=0.4)
+        self.dropout1 = nn.Dropout(p=0.5)
         # dropout layer
         self.dropout2 = nn.Dropout(p=0.3)
         # flatten layer
@@ -37,11 +37,11 @@ class CNN(nn.Module):
         x = self.pool(self.relu(self.bn3(self.conv3(x))))
         # flatten image input
         x = self.flatten(x)
-        # add dropout layer
+        # dropout
         x = self.dropout1(x)
         # add 1st hidden layer, with relu activation function
-        x = F.relu(self.fc1(x))
-        # add dropout layer
+        x = self.relu(self.fc1(x))
+        # dropout
         x = self.dropout2(x)
         # output layer
         x = self.fc2(x)
@@ -109,7 +109,7 @@ def train(train_dataloader, dev_dataloader, num_epochs, learning_rate):
                         if total > 400:
                             break
                     dev_accuracy = 100 * correct / total
-                    if dev_accuracy > 90:
+                    if dev_accuracy > 85:
                         torch.save(model.state_dict(), f'model-{dev_accuracy}.pth')
 
                     # print accuracy metrics
