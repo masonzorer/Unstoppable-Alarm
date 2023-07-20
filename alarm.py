@@ -1,4 +1,5 @@
 # file for python alarm clock
+import check_water
 from pygame import mixer
 from tkinter import *
 from threading import *
@@ -15,17 +16,20 @@ minute = StringVar(root)
 # Global alarm variables
 snoozes_left = 3
 mixer.init()
+time_to_wake_up = False 
 alarm_thread = None
 alarm_stop_event = Event()
 music_playing = False
 
 # alarm function
 def alarm():
+    global time_to_wake_up
     alarm_time = f"{hour.get()}:{minute.get()}:00"
     while alarm_stop_event.is_set() == False:
         now = datetime.datetime.now().strftime("%H:%M:%S")
         if now == alarm_time:
             print("Wake up!")
+            time_to_wake_up = True
             lock_alarm()
             play_sound()
         time.sleep(1)  # Wait for 1 second before checking the time again
@@ -47,11 +51,21 @@ def start_alarm():
 
 # stop current alarm and music
 def stop_alarm():
-    global alarm_thread
+    global alarm_thread, time_to_wake_up
     if alarm_thread == None:
         return
-    if music_playing:
-        stop_sound()
+    
+    # check if its time to wake up
+    if time_to_wake_up:
+        # check if water is running
+        running = check_water.check()
+        if running:
+            print("Alarm deactivated! Good morning!")
+            stop_sound()
+            time_to_wake_up = False
+        else:
+            print("Water is not running! Alarm still active!")
+            return
 
     # stop current alarm
     alarm_stop_event.set()
@@ -63,7 +77,7 @@ def play_sound():
     global music_playing
     if music_playing:
         return
-    mixer.music.load('FitnessGram.mp3')
+    mixer.music.load('Audio/FitnessGram.mp3')
     mixer.music.play()
     music_playing = True
 
