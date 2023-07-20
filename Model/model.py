@@ -48,9 +48,11 @@ class CNN(nn.Module):
         return x
     
 # train the model
-def train(train_dataloader, dev_dataloader, num_epochs, learning_rate):
+def train(train_dataloader, dev_dataloader, num_epochs, learning_rate, model_path=None):
     # create the model
     model = CNN()
+    if model_path:
+        model.load_state_dict(torch.load(model_path))
 
     # define the loss function and optimizer (binary classification)
     criterion = nn.CrossEntropyLoss()
@@ -110,7 +112,7 @@ def train(train_dataloader, dev_dataloader, num_epochs, learning_rate):
                             break
                     dev_accuracy = 100 * correct / total
                     if dev_accuracy > 85:
-                        torch.save(model.state_dict(), f'model-{dev_accuracy}.pth')
+                        torch.save(model.state_dict(), f'2model-{dev_accuracy}.pth')
 
                     # print accuracy metrics
                     print('Train Accuracy: {:.2f}% \tDev Accuracy: {:.2f}%'.format(train_accuracy, dev_accuracy))

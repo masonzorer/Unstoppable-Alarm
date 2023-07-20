@@ -57,7 +57,7 @@ def stop_alarm():
     if alarm_thread == None:
         return
     
-    # check if its time to wake up
+    # check if its time to wake up (alarm went off)
     if time_to_wake_up:
         # check if water is running
         stop_alarm_button['state'] = DISABLED
@@ -69,44 +69,49 @@ def stop_alarm():
 
         # handle cases
         if running:
+            # stop alarm and reset alarm to normal
             print("Alarm deactivated! Good morning!")
             stop_sound()
+            alarm_stop_event.set()
+            alarm_thread.join()
+            alarm_thread = None
+            sys.exit()
         else:
             print("Water is not running! Alarm still active!")
             stop_alarm_button['state'] = NORMAL
             return
 
-    # stop current alarm
+    # stop alarm (if not time to wake up)
     alarm_stop_event.set()
     alarm_thread.join()
     alarm_thread = None
 
-# play music
+# plays the music
 def play_sound():
     global music_playing
     if music_playing:
         return
-    # load music and loop until stopped
+    # loop until stopped
     mixer.music.load('Audio/FitnessGram.mp3')
     mixer.music.play(loops=-1)
     music_playing = True
 
-# stop music
+# stops the music
 def stop_sound():
     global music_playing
     if not music_playing:
         return
-    # stop music
     mixer.music.stop()
     music_playing = False
 
 # Functions to handle the snooze button press
 def snooze_alarm():
-    time.sleep(5)
+    time.sleep(5) # set to however long you want the snooze to be
     if alarm_thread == None:
         return
     play_sound()
 
+# snoozes alarm
 def snooze():
     global alarm_thread, snoozes_left
     # check if alarm is active
@@ -127,11 +132,7 @@ def snooze():
     snooze_thread = Thread(target=snooze_alarm, daemon=True)
     snooze_thread.start()
 
-# Function to disable the close button
-def disable_event():
-    pass
-
-# Function to lock the alarm changes
+# Lock set alarm button
 def lock_alarm():
     global set_alarm_button
     if set_alarm_button['state'] == NORMAL:
@@ -142,6 +143,10 @@ def lock_snooze():
     global snooze_button
     if snooze_button['state'] == NORMAL:
         snooze_button['state'] = DISABLED
+
+# Function to disable the close button
+def disable_event():
+    pass
 
 # GUI initialization function
 def init_gui():

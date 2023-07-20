@@ -71,10 +71,9 @@ def main():
     SAMPLE_RATE = 41000
     mel_spectrogram_transform = MelSpectrogram(
         sample_rate=SAMPLE_RATE, 
-        n_fft=1024,
-        win_length=1024,
+        n_fft=2048,
         hop_length=256,
-        n_mels=128
+        n_mels=64
     )
 
     # create test dataset
@@ -83,11 +82,11 @@ def main():
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=16, shuffle=False)
 
     # get predictions from ensemble
-    predictions = ensemble(test_dataloader)
+    #predictions = ensemble(test_dataloader)
 
     # get preds from individual models
-    model1 = 'model-88.46-best.pth' # set chosen model path
-    #predictions = get_preds_from_model(model1, test_dataloader)
+    model1 = '2model-88.46153846153847.pth' # set chosen model path
+    predictions = get_preds_from_model(model1, test_dataloader)
 
     # get the test labels
     test_labels = test_data['class'].values

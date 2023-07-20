@@ -62,7 +62,7 @@ def check():
     )
     spectrogram = mel_spectrogram_transform(waveform)
     spectrogram = torchaudio.transforms.AmplitudeToDB()(spectrogram)
-    print(spectrogram.shape)
+    #print(spectrogram.shape)
 
     # clip spectrogram to the proper size for the model
     if spectrogram.shape[2] > 800:
@@ -75,7 +75,7 @@ def check():
 
     # load model
     CNN_model = model.CNN()
-    CNN_model.load_state_dict(torch.load('Model/model-88.46-best.pth'))
+    CNN_model.load_state_dict(torch.load('Model/Best.pth'))
     CNN_model.eval()
 
     # get prediction
