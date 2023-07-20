@@ -5,11 +5,13 @@ from tkinter import *
 from threading import *
 import datetime
 import time
+import sys
 
 # Global GUI variables
 root = Tk()
 set_alarm_button = None
 snooze_button = None
+stop_alarm_button = None
 hour = StringVar(root)
 minute = StringVar(root)
 
@@ -51,20 +53,24 @@ def start_alarm():
 
 # stop current alarm and music
 def stop_alarm():
-    global alarm_thread, time_to_wake_up
+    global alarm_thread, time_to_wake_up, stop_alarm_button
     if alarm_thread == None:
         return
     
     # check if its time to wake up
     if time_to_wake_up:
         # check if water is running
+        stop_alarm_button['state'] = DISABLED
+        stop_sound()
         running = check_water.check()
+        play_sound()
         if running:
             print("Alarm deactivated! Good morning!")
             stop_sound()
-            time_to_wake_up = False
+            sys.exit()
         else:
             print("Water is not running! Alarm still active!")
+            stop_alarm_button['state'] = NORMAL
             return
 
     # stop current alarm
@@ -131,7 +137,7 @@ def lock_snooze():
 
 # GUI initialization function
 def init_gui():
-    global set_alarm_button, snooze_button
+    global set_alarm_button, snooze_button, stop_alarm_button, hour, minute, root
     root.geometry("400x400")
     root.title("Alarm Clock")
     root.protocol("WM_DELETE_WINDOW", disable_event)
