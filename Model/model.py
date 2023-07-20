@@ -26,7 +26,7 @@ class CNN(nn.Module):
         # flatten layer
         self.flatten = nn.Flatten()
         # fully connected layer
-        self.fc1 = nn.Linear(108544, 256)
+        self.fc1 = nn.Linear(102400, 256)
         # output layer
         self.fc2 = nn.Linear(256, 2)
 

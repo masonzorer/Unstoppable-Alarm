@@ -61,13 +61,16 @@ def stop_alarm():
     if time_to_wake_up:
         # check if water is running
         stop_alarm_button['state'] = DISABLED
+        
+        # stop sound and check if water is running
         stop_sound()
         running = check_water.check()
         play_sound()
+
+        # handle cases
         if running:
             print("Alarm deactivated! Good morning!")
             stop_sound()
-            sys.exit()
         else:
             print("Water is not running! Alarm still active!")
             stop_alarm_button['state'] = NORMAL
@@ -83,8 +86,9 @@ def play_sound():
     global music_playing
     if music_playing:
         return
+    # load music and loop until stopped
     mixer.music.load('Audio/FitnessGram.mp3')
-    mixer.music.play()
+    mixer.music.play(loops=-1)
     music_playing = True
 
 # stop music
@@ -92,6 +96,7 @@ def stop_sound():
     global music_playing
     if not music_playing:
         return
+    # stop music
     mixer.music.stop()
     music_playing = False
 
@@ -104,6 +109,9 @@ def snooze_alarm():
 
 def snooze():
     global alarm_thread, snoozes_left
+    # check if alarm is active
+    if alarm_thread == None:
+        return
     # handle repeated snooze button presses
     if snoozes_left == 0:
         return

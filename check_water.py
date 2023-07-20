@@ -15,7 +15,7 @@ def record_water():
     channels = 1
     sample_rate = 41000
     chunk_size = 1024
-    duration = 3
+    duration = 5
 
     # set up audio stream
     audio = pyaudio.PyAudio()
@@ -56,19 +56,19 @@ def check():
     waveform, sample_rate = torchaudio.load('Audio/water.wav', normalize=True)
     mel_spectrogram_transform = MelSpectrogram(
         sample_rate=41000, 
-        n_fft=1024,
-        win_length=1024,
+        n_fft=2048,
         hop_length=256,
-        n_mels=128
+        n_mels=64
     )
     spectrogram = mel_spectrogram_transform(waveform)
     spectrogram = torchaudio.transforms.AmplitudeToDB()(spectrogram)
+    print(spectrogram.shape)
 
     # clip spectrogram to the proper size for the model
-    if spectrogram.shape[2] > 431:
-            spectrogram = spectrogram[:, :, :431]
+    if spectrogram.shape[2] > 800:
+            spectrogram = spectrogram[:, :, :800]
     else:
-        spectrogram = torch.nn.functional.pad(spectrogram, (0, 431 - spectrogram.shape[2]))
+        spectrogram = torch.nn.functional.pad(spectrogram, (0, 800 - spectrogram.shape[2]))
 
     # add a batch dimension
     spectrogram = spectrogram.unsqueeze(0)

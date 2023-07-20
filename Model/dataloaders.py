@@ -42,11 +42,11 @@ class Dataset(torch.utils.data.Dataset):
         if self.train:
             spectrogram = self.add_masking(spectrogram)
 
-        # truncate the spectrogram to 10 seconds
-        if spectrogram.shape[2] > 431:
-            spectrogram = spectrogram[:, :, :431]
+        # truncate the spectrogram to 5 seconds
+        if spectrogram.shape[2] > 800:
+            spectrogram = spectrogram[:, :, :800]
         else:
-            spectrogram = torch.nn.functional.pad(spectrogram, (0, 431 - spectrogram.shape[2]))
+            spectrogram = torch.nn.functional.pad(spectrogram, (0, 800 - spectrogram.shape[2]))
         
         return spectrogram, label
     
@@ -74,10 +74,9 @@ def create(train_data, eval_data, batch_size):
     SAMPLE_RATE = 41000
     mel_spectrogram_transform = MelSpectrogram(
         sample_rate=SAMPLE_RATE, 
-        n_fft=1024,
-        win_length=1024,
+        n_fft=2048,
         hop_length=256,
-        n_mels=128
+        n_mels=64
     )
     
     # set the audio directory
