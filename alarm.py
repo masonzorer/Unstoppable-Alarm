@@ -1,5 +1,6 @@
 # file for python alarm clock
 import check_water
+import subprocess
 from pygame import mixer
 from tkinter import *
 from threading import *
@@ -17,6 +18,7 @@ minute = StringVar(root)
 
 # Global alarm variables
 snoozes_left = 3
+volume_lock = True
 mixer.init()
 time_to_wake_up = False 
 alarm_thread = None
@@ -30,8 +32,13 @@ def alarm():
     while alarm_stop_event.is_set() == False:
         now = datetime.datetime.now().strftime("%H:%M:%S")
         if now == alarm_time:
+            # change alarm to wake up mode
             print("Wake up!")
             time_to_wake_up = True
+            # lock volume to max
+            volume_lock_thread = Thread(target=lock_system_volume, daemon=True)
+            volume_lock_thread.start()
+            # lock ability to set alarm and play sound
             lock_alarm()
             play_sound()
         time.sleep(1)  # Wait for 1 second before checking the time again
@@ -53,7 +60,7 @@ def start_alarm():
 
 # stop current alarm and music
 def stop_alarm():
-    global alarm_thread, time_to_wake_up, stop_alarm_button
+    global alarm_thread, time_to_wake_up, stop_alarm_button, volume_lock
     if alarm_thread == None:
         return
     
@@ -71,6 +78,7 @@ def stop_alarm():
         if running:
             # stop alarm and reset alarm to normal
             print("Alarm deactivated! Good morning!")
+            volume_lock = False
             stop_sound()
             alarm_stop_event.set()
             alarm_thread.join()
@@ -103,6 +111,15 @@ def stop_sound():
         return
     mixer.music.stop()
     music_playing = False
+
+def set_system_volume_to_max():
+    subprocess.call(["osascript", "-e", "set volume output volume 100"])
+
+def lock_system_volume():
+    global volume_lock
+    while volume_lock:
+        set_system_volume_to_max()
+        time.sleep(1)
 
 # Functions to handle the snooze button press
 def snooze_alarm():
